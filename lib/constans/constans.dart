@@ -6,7 +6,7 @@ class WoocommerceInfo {
   static String consumerSecret = 'cs_22973f4db9e9d6ba884bef05bf8aeff96382523d';
 
   // BASE URL WOOCOMMERCE
-  static String baseURl = 'http://localhost/project/wordpress/wp-json/wc/v3/';
+  static String baseURl = 'http://10.0.2.2/project/wordpress/wp-json/wc/v3/';
 
   // API ENDPOINTS
   static String customerURL = 'customers';

@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:dio/dio.dart';
+import 'package:flutter/material.dart';
 
 import 'package:wordpress_app/constans/constans.dart';
 import 'package:wordpress_app/model/woocommerce/register_model.dart';
@@ -31,11 +32,8 @@ class APIService {
         returnResponse = true;
       }
     } on DioException catch (e) {
-      if (e.response!.statusCode == 404) {
-        returnResponse = false;
-      } else {
-        returnResponse = false;
-      }
+      debugPrint('Dio error: ${e.type} | ${e.message} | ${e.response?.data}');
+      returnResponse = false;
     }
     return returnResponse;
   }
