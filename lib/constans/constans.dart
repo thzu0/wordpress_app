@@ -1,5 +1,17 @@
 import 'package:flutter/material.dart';
 
+class WoocommerceInfo {
+  //CONSUMERKEY & CONSUMERSECRET
+  static String consumerKey = 'ck_d794947246d5f3d75ec248ec1bbe7fe24006506f';
+  static String consumerSecret = 'cs_22973f4db9e9d6ba884bef05bf8aeff96382523d';
+
+  // BASE URL WOOCOMMERCE
+  static String baseURl = 'http://localhost/project/wordpress/wp-json/wc/v3/';
+
+  // API ENDPOINTS
+  static String customerURL = 'customers';
+}
+
 class Constants {
   static Color primaryColor = const Color(0xFF296E48);
   static Color blackColor = Colors.black54;
