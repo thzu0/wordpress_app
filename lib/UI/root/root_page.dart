@@ -2,8 +2,11 @@ import 'package:flutter/material.dart';
 
 import 'package:animated_bottom_navigation_bar/animated_bottom_navigation_bar.dart';
 
-import 'package:page_transition/page_transition.dart';
 import 'package:wordpress_app/constans/constans.dart';
+import 'package:wordpress_app/UI/cart/cart_page.dart';
+import 'package:wordpress_app/UI/catalog/catalog_page.dart';
+import 'package:wordpress_app/UI/home/home_page.dart';
+import 'package:wordpress_app/UI/profile/Profile_page.dart';
 
 ///==================================
 ///this page is for const app bar and const nav
@@ -18,9 +21,12 @@ class RootPage extends StatefulWidget {
 class _RootPageState extends State<RootPage> {
   int bottomIndex = 0;
 
-  List<Widget> page() {
-    return [HomePage(), FavoritePage(), CardPage(), ProfilePage()];
-  }
+  List<Widget> pages = const [
+    HomePage(),
+    CatalogPage(),
+    CartPage(),
+    ProfilePage(),
+  ];
 
   List<IconData> iconList = const [
     Icons.home,
@@ -60,20 +66,12 @@ class _RootPageState extends State<RootPage> {
         backgroundColor: Theme.of(context).scaffoldBackgroundColor,
         elevation: 0.0,
       ),
-      body: IndexedStack(index: bottomIndex, children: page()),
+      body: IndexedStack(index: bottomIndex, children: pages),
       floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          Navigator.push(
-            context,
-            PageTransition(
-              child: const ScanPage(),
-              type: PageTransitionType.fade,
-            ),
-          );
-        },
+        onPressed: () {},
         backgroundColor: Constants.primaryColor,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
-        child: Image.asset('assets/images/code-scan-two.png', height: 30),
+        child: Icon(Icons.qr_code_scanner_rounded, color: Constants.blackColor),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       bottomNavigationBar: AnimatedBottomNavigationBar(
