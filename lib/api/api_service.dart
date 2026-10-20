@@ -5,6 +5,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 
 import 'package:wordpress_app/constans/constans.dart';
+import 'package:wordpress_app/model/woocommerce/login_model.dart';
 import 'package:wordpress_app/model/woocommerce/register_model.dart';
 
 class APIService {
@@ -36,5 +37,27 @@ class APIService {
       returnResponse = false;
     }
     return returnResponse;
+  }
+
+  Future<LoginResponseModel> loginCustomer(
+    String username,
+    String password,
+  ) async {
+    late LoginResponseModel loginModel;
+    try {
+      var response = await Dio().post(
+        WoocommerceInfo.tokenURL,
+        data: {'username': username, 'password': password},
+        options: Options(
+          headers: {HttpHeaders.contentTypeHeader: 'applica tion/json'},
+        ),
+      );
+      if (response.statusCode == 200) {
+        loginModel = LoginResponseModel.fromJson(response.data);
+      }
+    } on DioException catch (e) {
+      throw 'Error $e';
+    }
+    return loginModel;
   }
 }

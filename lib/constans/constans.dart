@@ -8,6 +8,10 @@ class WoocommerceInfo {
   // BASE URL WOOCOMMERCE
   static String baseURl = 'http://10.0.2.2/project/wordpress/wp-json/wc/v3/';
 
+  //URL FOR AUTHENTICATION WITH JWT
+  static String tokenURL =
+      'https://localhost/project/wordpress/wp-json/jwt-auth/v1/token';
+
   // API ENDPOINTS
   static String customerURL = 'customers';
 }
