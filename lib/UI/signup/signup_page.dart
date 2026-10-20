@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:wordpress_app/UI/signup/custom_form_field.dart';
+import 'package:wordpress_app/UI/utils/custom_appbar.dart';
 import 'package:wordpress_app/UI/utils/custom_dialog_box.dart';
 import 'package:wordpress_app/UI/utils/extension.dart';
 import 'package:wordpress_app/api/api_service.dart';
@@ -33,34 +34,7 @@ class _SignupPageState extends State<SignupPage> {
     return Scaffold(
       body: Stack(
         children: <Widget>[
-          Positioned(
-            top: 50,
-            right: 20,
-            left: 20,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: <Widget>[
-                Container(
-                  height: 40,
-                  width: 40,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(50),
-                    color: Constants.primaryColor.withValues(alpha: 0.15),
-                  ),
-                  child: Icon(Icons.close, color: Constants.primaryColor),
-                ),
-                Container(
-                  height: 40,
-                  width: 40,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(50),
-                    color: Constants.primaryColor.withValues(alpha: 0.15),
-                  ),
-                  child: Icon(Icons.share, color: Constants.primaryColor),
-                ),
-              ],
-            ),
-          ),
+          CustomAppBar(appBarTitle: 'ثبت نام'),
           Positioned(
             top: 150,
             left: 20,
