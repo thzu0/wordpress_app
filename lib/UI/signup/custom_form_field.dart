@@ -27,7 +27,7 @@ class CustomFormField extends StatelessWidget {
         onChanged: onChanged,
         cursorColor: Constants.primaryColor,
         style: const TextStyle(
-          fontFamily: 'Lalazar',
+          fontFamily: 'Lalezar',
           fontSize: 20,
           height: 2.0,
         ),
