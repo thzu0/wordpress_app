@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:page_transition/page_transition.dart';
+import 'package:wordpress_app/UI/login/login_page.dart';
 import 'package:wordpress_app/UI/signup/custom_form_field.dart';
 import 'package:wordpress_app/UI/utils/custom_appbar.dart';
 import 'package:wordpress_app/UI/utils/custom_dialog_box.dart';
@@ -170,7 +172,15 @@ class _SignupPageState extends State<SignupPage> {
                                   vertical: 10,
                                 ),
                               ),
-                              onPressed: () {},
+                              onPressed: () {
+                                Navigator.pushReplacement(
+                                  context,
+                                  PageTransition(
+                                    type: PageTransitionType.rightToLeft,
+                                    child: const LoginPage(),
+                                  ),
+                                );
+                              },
                               child: const Text(
                                 'قبلا اکانت ساختی؟',
                                 style: TextStyle(

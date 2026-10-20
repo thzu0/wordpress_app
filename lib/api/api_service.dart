@@ -49,14 +49,15 @@ class APIService {
         WoocommerceInfo.tokenURL,
         data: {'username': username, 'password': password},
         options: Options(
-          headers: {HttpHeaders.contentTypeHeader: 'applica tion/json'},
+          headers: {HttpHeaders.contentTypeHeader: 'application/json'},
         ),
       );
       if (response.statusCode == 200) {
         loginModel = LoginResponseModel.fromJson(response.data);
       }
     } on DioException catch (e) {
-      throw 'Error $e';
+      debugPrint('Status: ${e.response?.statusCode}');
+      debugPrint('Body: ${e.response?.data}');
     }
     return loginModel;
   }
