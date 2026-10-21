@@ -1,5 +1,10 @@
 import 'package:flutter/material.dart';
+
+import 'package:wordpress_app/UI/home/home_page.dart';
 import 'package:wordpress_app/UI/root/root_page.dart';
+import 'package:wordpress_app/provider/shop_provider.dart';
+
+import 'package:provider/provider.dart';
 
 void main() {
   runApp(const MainApp());
@@ -10,9 +15,17 @@ class MainApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: RootPage(),
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(
+          create: (context) => ShopProvider(),
+          child: const HomePage(),
+        ),
+      ],
+      child: const MaterialApp(
+        debugShowCheckedModeBanner: false,
+        home: RootPage(),
+      ),
     );
   }
 }
