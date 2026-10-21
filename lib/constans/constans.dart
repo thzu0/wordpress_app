@@ -14,6 +14,7 @@ class WoocommerceInfo {
 
   // API ENDPOINTS
   static String customerURL = 'customers';
+  static String productURL = 'products';
 }
 
 class Constants {

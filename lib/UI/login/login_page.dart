@@ -5,7 +5,7 @@ import 'package:wordpress_app/UI/root/root_page.dart';
 import 'package:wordpress_app/UI/signup/signup_page.dart';
 import 'package:wordpress_app/UI/utils/custom_appbar.dart';
 import 'package:wordpress_app/UI/utils/custom_dialog_box.dart';
-import 'package:wordpress_app/UI/utils/extension.dart';
+
 import 'package:wordpress_app/api/api_service.dart';
 import 'package:wordpress_app/constans/constans.dart';
 import 'package:wordpress_app/model/woocommerce/register_model.dart';
