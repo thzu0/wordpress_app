@@ -3,6 +3,7 @@ import 'package:intl/intl.dart' show NumberFormat;
 import 'package:provider/provider.dart';
 import 'package:wordpress_app/constans/constans.dart';
 import 'package:wordpress_app/provider/shop_provider.dart';
+import 'package:wordpress_app/widget/marquee_text.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -259,11 +260,9 @@ class _HomePageState extends State<HomePage> {
                                               fontWeight: FontWeight.w400,
                                             ),
                                           ),
-                                          Text(
+                                          MarqueeText(
                                             product.name.toString(),
                                             textAlign: TextAlign.right,
-                                            maxLines: 1,
-                                            overflow: TextOverflow.ellipsis,
                                             style: const TextStyle(
                                               fontFamily: 'Vazirmatn',
                                               color: Colors.white70,
