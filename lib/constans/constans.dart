@@ -15,6 +15,19 @@ class WoocommerceInfo {
   // API ENDPOINTS
   static String customerURL = 'customers';
   static String productURL = 'products';
+
+  /// host/port آدرس عکس رو با آدرس قابل دسترس از امولاتور عوض می‌کنه
+  static String fixImageUrl(String url) {
+    final base = Uri.parse(baseURl);
+    final uri = Uri.parse(url);
+    return uri
+        .replace(
+          scheme: base.scheme,
+          host: base.host,
+          port: base.hasPort ? base.port : null,
+        )
+        .toString();
+  }
 }
 
 class Constants {
