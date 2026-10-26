@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 
 import 'package:wordpress_app/constans/constans.dart';
 import 'package:wordpress_app/model/woocommerce/login_model.dart';
+import 'package:wordpress_app/model/woocommerce/product_category_model.dart';
 import 'package:wordpress_app/model/woocommerce/product_model.dart';
 import 'package:wordpress_app/model/woocommerce/register_model.dart';
 
@@ -97,5 +98,29 @@ class APIService {
       throw 'Error $e';
     }
     return productList;
+  }
+
+  Future<List<ProductCategory>> getProductCategory() async {
+    final String productCategoryURL =
+        "${WoocommerceInfo.baseURl}${WoocommerceInfo.productCategoryURL}?consumer_key=${WoocommerceInfo.consumerKey}&consumer_secret=${WoocommerceInfo.consumerSecret}";
+
+    List<ProductCategory> productCategoryList = <ProductCategory>[];
+
+    try {
+      Response response = await Dio().get(
+        productCategoryURL,
+        options: Options(
+          headers: {HttpHeaders.contentTypeHeader: 'application/json'},
+        ),
+      );
+      if (response.statusCode == 200) {
+        productCategoryList = (response.data as List)
+            .map((i) => ProductCategory.fromJson(i))
+            .toList();
+      }
+    } on DioException catch (e) {
+      throw 'Error $e';
+    }
+    return productCategoryList;
   }
 }

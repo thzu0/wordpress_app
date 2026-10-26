@@ -28,6 +28,7 @@ class _HomePageState extends State<HomePage> {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       Provider.of<ShopProvider>(context, listen: false).getAllProducts();
+      Provider.of<ShopProvider>(context, listen: false).getAllCategoryNames();
     });
   }
 
@@ -141,7 +142,7 @@ class _HomePageState extends State<HomePage> {
                   child: ListView.builder(
                     reverse: true,
                     scrollDirection: Axis.horizontal,
-                    itemCount: _plantTypes.length,
+                    itemCount: value.productCategory.length,
                     itemBuilder: (context, index) {
                       return Padding(
                         padding: const EdgeInsets.all(10.0),
@@ -152,7 +153,8 @@ class _HomePageState extends State<HomePage> {
                             });
                           },
                           child: Text(
-                            _plantTypes[index],
+                            value.productCategory[index].categoryName
+                                .toString(),
                             style: TextStyle(
                               fontFamily: 'Vazirmatn',
                               fontSize: 16,

@@ -15,7 +15,7 @@ class WoocommerceInfo {
   // API ENDPOINTS
   static String customerURL = 'customers';
   static String productURL = 'products';
-  static String productCategoryURL = 'categories';
+  static String productCategoryURL = 'products/categories';
 
   /// host/port آدرس عکس رو با آدرس قابل دسترس از امولاتور عوض می‌کنه
   static String fixImageUrl(String url) {
