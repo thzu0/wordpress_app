@@ -10,14 +10,11 @@ class ShopProvider with ChangeNotifier {
     _apiService = APIService();
   }
 
-  bool isLoading = false;
+  /// لودینگ دسته‌بندی‌ها (فقط بار اول)
+  bool isCategoryLoading = false;
 
-  ///========================
-  /// FOR STORE ALL PRODUCTS
-  ///========================
-
-  List<Product> _product = <Product>[];
-  List<Product> get product => _product;
+  /// لودینگ محصولات دسته‌ی انتخاب‌شده (هر بار که دسته عوض میشه)
+  bool isProductLoading = false;
 
   ///====================
   /// FOR STORE ALL CATEGORY NAMES
@@ -25,23 +22,52 @@ class ShopProvider with ChangeNotifier {
   List<ProductCategory> _productCategory = <ProductCategory>[];
   List<ProductCategory> get productCategory => _productCategory;
 
+  ///====================
+  /// FOR STORE PRODUCT WITH CATEGORY NAME
+  ///====================
+  List<Product> _productByCategory = <Product>[];
+  List<Product> get productByCategory => _productByCategory;
+
+  /// دریافت دسته‌ها
   Future<void> getAllCategoryNames() async {
-    isLoading = true;
+    isCategoryLoading = true;
     notifyListeners();
-    final List<ProductCategory> categoryResponse = await _apiService!
-        .getProductCategory();
-    _productCategory = categoryResponse;
-    isLoading = false;
+
+    try {
+      _productCategory = await _apiService!.getProductCategory();
+    } catch (e) {
+      debugPrint('getAllCategoryNames error: $e');
+      _productCategory = <ProductCategory>[];
+    }
+
+    isCategoryLoading = false;
     notifyListeners();
   }
 
-  Future<void> getAllProducts() async {
-    isLoading = true;
+  /// دریافت محصولات یک دسته
+  Future<void> getProductsByCategory(String categoryID) async {
+    isProductLoading = true;
     notifyListeners();
-    final List<Product> response = await _apiService!.getProducts();
-    _product = response;
-    isLoading = false;
+
+    try {
+      _productByCategory = await _apiService!.getProductCategorybyId(
+        categoryID,
+      );
+    } catch (e) {
+      debugPrint('getProductsByCategory error: $e');
+      _productByCategory = <Product>[];
+    }
+
+    isProductLoading = false;
     notifyListeners();
+  }
+
+  /// لود اولیه: اول دسته‌ها، بعد محصولات اولین دسته (بدون hardcode کردن '17')
+  Future<void> loadHomeData() async {
+    await getAllCategoryNames();
+    if (_productCategory.isNotEmpty) {
+      await getProductsByCategory(_productCategory.first.categoryId.toString());
+    }
   }
 
   void initializeData() {

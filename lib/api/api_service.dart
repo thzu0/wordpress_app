@@ -123,4 +123,28 @@ class APIService {
     }
     return productCategoryList;
   }
+
+  Future<List<Product>> getProductCategorybyId(String catID) async {
+    final String productCategoryURL =
+        "${WoocommerceInfo.baseURl}${WoocommerceInfo.productURL}?category=$catID&consumer_key=${WoocommerceInfo.consumerKey}&consumer_secret=${WoocommerceInfo.consumerSecret}";
+
+    List<Product> productCategoryList = <Product>[];
+
+    try {
+      Response response = await Dio().get(
+        productCategoryURL,
+        options: Options(
+          headers: {HttpHeaders.contentTypeHeader: 'application/json'},
+        ),
+      );
+      if (response.statusCode == 200) {
+        productCategoryList = (response.data as List)
+            .map((i) => Product.fromJson(i))
+            .toList();
+      }
+    } on DioException catch (e) {
+      throw 'Error $e';
+    }
+    return productCategoryList;
+  }
 }

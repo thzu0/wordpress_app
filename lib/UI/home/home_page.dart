@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart' show NumberFormat;
 import 'package:provider/provider.dart';
 import 'package:wordpress_app/constans/constans.dart';
+import 'package:wordpress_app/model/woocommerce/product_model.dart';
 import 'package:wordpress_app/provider/shop_provider.dart';
 import 'package:wordpress_app/widget/marquee_text.dart';
 
@@ -15,20 +16,19 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   int selectedIndex = 0;
 
-  final List<String> _plantTypes = [
-    '| پیشنهادی |',
-    '| آپارتمانی |',
-    '| محل کار |',
-    '| گل باغچه ایی |',
-    '| گل سمی |',
+  List<Categories> productsCategoryNames = <Categories>[
+    Categories(orderId: 1, id: 16, name: '| همه |'),
+    Categories(orderId: 2, id: 17, name: '| برنامه نویسی |'),
+    Categories(orderId: 3, id: 20, name: '| سایت |'),
+    Categories(orderId: 4, id: 19, name: '| طراحی |'),
+    Categories(orderId: 5, id: 18, name: '| شبکه |'),
   ];
 
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      Provider.of<ShopProvider>(context, listen: false).getAllProducts();
-      Provider.of<ShopProvider>(context, listen: false).getAllCategoryNames();
+      context.read<ShopProvider>().loadHomeData();
     });
   }
 
@@ -46,7 +46,7 @@ class _HomePageState extends State<HomePage> {
     return WoocommerceInfo.fixImageUrl(images[0].src.toString());
   }
 
-  /// اسم اولین دسته‌بندی (یا رشته‌ی خالی)
+  /// اسم اولین دسته‌بندی محصول (یا رشته‌ی خالی)
   String _categoryOf(dynamic product) {
     final categories = product.categories;
     if (categories == null || categories.isEmpty) return '';
@@ -70,8 +70,11 @@ class _HomePageState extends State<HomePage> {
 
     return Consumer<ShopProvider>(
       builder: (context, value, child) {
-        if (value.isLoading) {
-          return const Center(child: CircularProgressIndicator());
+        // لودینگ تمام‌صفحه فقط بار اول (دریافت دسته‌ها)
+        if (value.isCategoryLoading) {
+          return const Scaffold(
+            body: Center(child: CircularProgressIndicator()),
+          );
         }
 
         return Scaffold(
@@ -144,17 +147,19 @@ class _HomePageState extends State<HomePage> {
                     scrollDirection: Axis.horizontal,
                     itemCount: value.productCategory.length,
                     itemBuilder: (context, index) {
+                      final category = value.productCategory[index];
                       return Padding(
                         padding: const EdgeInsets.all(10.0),
                         child: GestureDetector(
                           onTap: () {
-                            setState(() {
-                              selectedIndex = index;
-                            });
+                            if (selectedIndex == index) return;
+                            setState(() => selectedIndex = index);
+                            value.getProductsByCategory(
+                              category.categoryId.toString(),
+                            );
                           },
                           child: Text(
-                            value.productCategory[index].categoryName
-                                .toString(),
+                            category.categoryName.toString(),
                             style: TextStyle(
                               fontFamily: 'Vazirmatn',
                               fontSize: 16,
@@ -177,139 +182,152 @@ class _HomePageState extends State<HomePage> {
                 ///===================================
                 SizedBox(
                   height: size.height * 0.27,
-                  child: ListView.builder(
-                    physics: const BouncingScrollPhysics(),
-                    itemCount: value.product.length,
-                    scrollDirection: Axis.horizontal,
-                    reverse: true,
-                    itemBuilder: (context, index) {
-                      final product = value.product[index];
-                      final imageUrl = _imageOf(product);
-                      final categoryName = _categoryOf(product);
-
-                      return GestureDetector(
-                        onTap: () {},
-                        child: Container(
-                          margin: const EdgeInsets.symmetric(horizontal: 18.0),
-                          width: 215.0,
-                          decoration: BoxDecoration(
-                            color: Constants.primaryColor.withValues(
-                              alpha: 0.8,
-                            ),
-                            borderRadius: BorderRadius.circular(20.0),
+                  child: value.isProductLoading
+                      ? const Center(child: CircularProgressIndicator())
+                      : value.productByCategory.isEmpty
+                      ? const Center(
+                          child: Text(
+                            'محصولی در این دسته وجود ندارد',
+                            style: TextStyle(fontFamily: 'Vazirmatn'),
                           ),
-                          child: Stack(
-                            children: <Widget>[
-                              // دکمه علاقه‌مندی
-                              Positioned(
-                                top: 10,
-                                right: 10.0,
-                                child: Container(
-                                  height: 40.0,
-                                  width: 40.0,
-                                  decoration: BoxDecoration(
-                                    color: Colors.white,
-                                    borderRadius: BorderRadius.circular(50.0),
-                                  ),
-                                  child: IconButton(
-                                    onPressed: () {},
-                                    icon: Icon(
-                                      Icons.favorite_border_outlined,
-                                      color: Constants.primaryColor,
-                                      size: 20.0,
-                                    ),
-                                  ),
-                                ),
-                              ),
+                        )
+                      : ListView.builder(
+                          physics: const BouncingScrollPhysics(),
+                          itemCount: value.productByCategory.length,
+                          scrollDirection: Axis.horizontal,
+                          reverse: true,
+                          itemBuilder: (context, index) {
+                            final product = value.productByCategory[index];
+                            final imageUrl = _imageOf(product);
+                            final categoryName = _categoryOf(product);
 
-                              // عکس
-                              Positioned(
-                                top: 45,
-                                right: 45,
-                                left: 45,
-                                bottom: 80,
-                                child: ClipRRect(
-                                  borderRadius: BorderRadius.circular(20),
-                                  child: _networkImage(
-                                    imageUrl,
-                                    fit: BoxFit.cover,
-                                  ),
+                            return GestureDetector(
+                              onTap: () {},
+                              child: Container(
+                                margin: const EdgeInsets.symmetric(
+                                  horizontal: 18.0,
                                 ),
-                              ),
-
-                              // قیمت (چپ) + دسته‌بندی و اسم (راست)
-                              Positioned(
-                                bottom: 14,
-                                left: 14,
-                                right: 14,
-                                child: Row(
-                                  textDirection: TextDirection.rtl,
-                                  crossAxisAlignment: CrossAxisAlignment.end,
+                                width: 215.0,
+                                decoration: BoxDecoration(
+                                  color: Constants.primaryColor.withValues(
+                                    alpha: 0.8,
+                                  ),
+                                  borderRadius: BorderRadius.circular(20.0),
+                                ),
+                                child: Stack(
                                   children: <Widget>[
-                                    Expanded(
-                                      child: Column(
+                                    // دکمه علاقه‌مندی
+                                    Positioned(
+                                      top: 10,
+                                      right: 10.0,
+                                      child: Container(
+                                        height: 40.0,
+                                        width: 40.0,
+                                        decoration: BoxDecoration(
+                                          color: Colors.white,
+                                          borderRadius: BorderRadius.circular(
+                                            50.0,
+                                          ),
+                                        ),
+                                        child: IconButton(
+                                          onPressed: () {},
+                                          icon: Icon(
+                                            Icons.favorite_border_outlined,
+                                            color: Constants.primaryColor,
+                                            size: 20.0,
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+
+                                    // عکس
+                                    Positioned(
+                                      top: 45,
+                                      right: 45,
+                                      left: 45,
+                                      bottom: 80,
+                                      child: ClipRRect(
+                                        borderRadius: BorderRadius.circular(20),
+                                        child: _networkImage(
+                                          imageUrl,
+                                          fit: BoxFit.cover,
+                                        ),
+                                      ),
+                                    ),
+
+                                    // قیمت (چپ) + دسته‌بندی و اسم (راست)
+                                    Positioned(
+                                      bottom: 14,
+                                      left: 14,
+                                      right: 14,
+                                      child: Row(
+                                        textDirection: TextDirection.rtl,
                                         crossAxisAlignment:
                                             CrossAxisAlignment.end,
-                                        mainAxisSize: MainAxisSize.min,
                                         children: <Widget>[
-                                          Text(
-                                            categoryName,
-                                            textAlign: TextAlign.right,
-                                            style: const TextStyle(
-                                              fontFamily: 'Vazirmatn',
-                                              color: Colors.white70,
-                                              fontSize: 13.0,
-                                              fontWeight: FontWeight.w400,
+                                          Expanded(
+                                            child: Column(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.end,
+                                              mainAxisSize: MainAxisSize.min,
+                                              children: <Widget>[
+                                                Text(
+                                                  categoryName,
+                                                  textAlign: TextAlign.right,
+                                                  style: const TextStyle(
+                                                    fontFamily: 'Vazirmatn',
+                                                    color: Colors.white70,
+                                                    fontSize: 13.0,
+                                                    fontWeight: FontWeight.w400,
+                                                  ),
+                                                ),
+                                                MarqueeText(
+                                                  product.name.toString(),
+                                                  textAlign: TextAlign.right,
+                                                  style: const TextStyle(
+                                                    fontFamily: 'Vazirmatn',
+                                                    color: Colors.white70,
+                                                    fontSize: 15.0,
+                                                    fontWeight: FontWeight.bold,
+                                                  ),
+                                                ),
+                                              ],
                                             ),
                                           ),
-                                          MarqueeText(
-                                            product.name.toString(),
-                                            textAlign: TextAlign.right,
-                                            style: const TextStyle(
-                                              fontFamily: 'Vazirmatn',
-                                              color: Colors.white70,
-                                              fontSize: 15.0,
-                                              fontWeight: FontWeight.bold,
+                                          const SizedBox(width: 6),
+                                          Container(
+                                            padding: const EdgeInsets.symmetric(
+                                              horizontal: 8,
+                                              vertical: 2.0,
+                                            ),
+                                            decoration: BoxDecoration(
+                                              color: Colors.white,
+                                              borderRadius:
+                                                  BorderRadius.circular(20.0),
+                                            ),
+                                            child: Text(
+                                              formatPrice(
+                                                numberFormat,
+                                                product.price,
+                                              ),
+                                              textDirection: TextDirection.rtl,
+                                              style: TextStyle(
+                                                color: Constants.primaryColor,
+                                                fontSize: 13.0,
+                                                fontFamily: 'Lalezar',
+                                                fontWeight: FontWeight.bold,
+                                              ),
                                             ),
                                           ),
                                         ],
                                       ),
                                     ),
-                                    const SizedBox(width: 6),
-                                    Container(
-                                      padding: const EdgeInsets.symmetric(
-                                        horizontal: 8,
-                                        vertical: 2.0,
-                                      ),
-                                      decoration: BoxDecoration(
-                                        color: Colors.white,
-                                        borderRadius: BorderRadius.circular(
-                                          20.0,
-                                        ),
-                                      ),
-                                      child: Text(
-                                        formatPrice(
-                                          numberFormat,
-                                          product.price,
-                                        ),
-                                        textDirection: TextDirection.rtl,
-                                        style: TextStyle(
-                                          color: Constants.primaryColor,
-                                          fontSize: 13.0,
-                                          fontFamily: 'Lalezar',
-                                          fontWeight: FontWeight.bold,
-                                        ),
-                                      ),
-                                    ),
                                   ],
                                 ),
                               ),
-                            ],
-                          ),
+                            );
+                          },
                         ),
-                      );
-                    },
-                  ),
                 ),
 
                 ///===================================
@@ -340,9 +358,11 @@ class _HomePageState extends State<HomePage> {
                   child: ListView.builder(
                     shrinkWrap: true,
                     physics: const NeverScrollableScrollPhysics(),
-                    itemCount: value.product.length,
+                    itemCount: value.isProductLoading
+                        ? 0
+                        : value.productByCategory.length,
                     itemBuilder: (context, index) {
-                      final product = value.product[index];
+                      final product = value.productByCategory[index];
                       final imageUrl = _imageOf(product);
                       final categoryName = _categoryOf(product);
 

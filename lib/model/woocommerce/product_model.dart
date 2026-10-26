@@ -55,10 +55,11 @@ class WooImages {
 }
 
 class Categories {
+  num? orderId;
   int? id;
   String? name;
 
-  Categories({this.id, this.name});
+  Categories({this.id, this.name, this.orderId});
 
   Categories.fromJson(Map<String, dynamic> json) {
     id = json['id'];
