@@ -1,15 +1,17 @@
 import 'package:flutter/material.dart';
 
-/// متنی که اگه از عرض جا بیشتر باشه، به جای «...» مثل تابلو اعلانات
-/// آروم اسکرول میشه. اگه جا بشه، عادی نمایش داده میشه.
+/// متنی که اگه از عرض جا بیشتر باشه، مثل تابلوهای بالای مغازه‌ها
+/// بی‌وقفه حرکت می‌کنه: از یه طرف میره و با یه فاصله از طرف دیگه برمی‌گرده.
+/// اگه متن جا بشه، ثابت و عادی نمایش داده میشه.
 class MarqueeText extends StatefulWidget {
   const MarqueeText(
     this.text, {
     super.key,
     this.style,
     this.textAlign = TextAlign.start,
-    this.velocity = 30,
-    this.pause = const Duration(seconds: 1),
+    this.velocity = 40,
+    this.gap = 40,
+    this.startDelay = const Duration(milliseconds: 800),
   });
 
   final String text;
@@ -19,8 +21,11 @@ class MarqueeText extends StatefulWidget {
   /// سرعت حرکت (پیکسل بر ثانیه)
   final double velocity;
 
-  /// مکث اول و آخر هر دور
-  final Duration pause;
+  /// فاصله بین آخر متن و شروع دوباره‌ی اون
+  final double gap;
+
+  /// مکث کوتاه قبل از شروع حرکت (تا اول بشه متن رو خوند)
+  final Duration startDelay;
 
   @override
   State<MarqueeText> createState() => _MarqueeTextState();
@@ -30,6 +35,7 @@ class _MarqueeTextState extends State<MarqueeText> {
   final ScrollController _controller = ScrollController();
   bool _looping = false;
   int _generation = 0;
+  double _textWidth = 0;
 
   @override
   void didUpdateWidget(covariant MarqueeText oldWidget) {
@@ -54,25 +60,19 @@ class _MarqueeTextState extends State<MarqueeText> {
     final gen = _generation;
     bool alive() => mounted && gen == _generation && _controller.hasClients;
 
+    await Future.delayed(widget.startDelay);
+
     while (alive()) {
-      await Future.delayed(widget.pause);
-      if (!alive()) break;
-
-      final max = _controller.position.maxScrollExtent;
-      if (max <= 0) break;
-
+      // یه دور کامل = عرض متن + فاصله؛ بعدش کپی دوم دقیقاً جای اولی میشه
+      final cycle = _textWidth + widget.gap;
       await _controller.animateTo(
-        max,
+        cycle,
         duration: Duration(
-          milliseconds: (max / widget.velocity * 1000).round(),
+          milliseconds: (cycle / widget.velocity * 1000).round(),
         ),
         curve: Curves.linear,
       );
       if (!alive()) break;
-
-      await Future.delayed(widget.pause);
-      if (!alive()) break;
-
       _controller.jumpTo(0);
     }
     if (gen == _generation) _looping = false;
@@ -90,10 +90,10 @@ class _MarqueeTextState extends State<MarqueeText> {
           textDirection: direction,
           maxLines: 1,
         )..layout();
-        final textWidth = painter.width;
+        _textWidth = painter.width;
         painter.dispose();
 
-        final overflows = textWidth > constraints.maxWidth;
+        final overflows = _textWidth > constraints.maxWidth;
 
         if (!overflows) {
           return Text(
@@ -108,15 +108,23 @@ class _MarqueeTextState extends State<MarqueeText> {
           if (mounted) _loop();
         });
 
+        final label = Text(
+          widget.text,
+          style: widget.style,
+          maxLines: 1,
+          softWrap: false,
+        );
+
         return SingleChildScrollView(
           scrollDirection: Axis.horizontal,
           controller: _controller,
           physics: const NeverScrollableScrollPhysics(),
-          child: Text(
-            widget.text,
-            style: widget.style,
-            maxLines: 1,
-            softWrap: false,
+          child: Row(
+            children: [
+              label,
+              SizedBox(width: widget.gap),
+              label, // کپی دوم که از اونور وارد میشه
+            ],
           ),
         );
       },
