@@ -14,14 +14,19 @@ class CustomAppBar extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: <Widget>[
-          Container(
-            height: 40,
-            width: 40,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(50),
-              color: Constants.primaryColor.withValues(alpha: 0.15),
+          GestureDetector(
+            onTap: () {
+              Navigator.pop(context);
+            },
+            child: Container(
+              height: 40,
+              width: 40,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(50),
+                color: Constants.primaryColor.withValues(alpha: 0.15),
+              ),
+              child: Icon(Icons.close, color: Constants.primaryColor),
             ),
-            child: Icon(Icons.close, color: Constants.primaryColor),
           ),
           Text(
             appBarTitle,
