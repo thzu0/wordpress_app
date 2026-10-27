@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart' show NumberFormat;
+import 'package:page_transition/page_transition.dart';
 import 'package:provider/provider.dart';
+import 'package:wordpress_app/UI/product_details/product_detail.dart';
 import 'package:wordpress_app/constans/constans.dart';
 import 'package:wordpress_app/model/woocommerce/product_model.dart';
 import 'package:wordpress_app/provider/shop_provider.dart';
@@ -200,7 +202,15 @@ class _HomePageState extends State<HomePage> {
                             final categoryName = _categoryOf(product);
 
                             return GestureDetector(
-                              onTap: () {},
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  PageTransition(
+                                    child: ProductDetail(product: product),
+                                    type: PageTransitionType.fade,
+                                  ),
+                                );
+                              },
                               child: Container(
                                 margin: const EdgeInsets.symmetric(
                                   horizontal: 18.0,
