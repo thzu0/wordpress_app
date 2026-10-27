@@ -20,9 +20,6 @@ class _ProductDetailState extends State<ProductDetail> {
 
   bool _isExpanded = false;
 
-  // ارتفاع متن در حالت جمع‌شده
-  static const double _collapsedHeight = 130;
-
   bool toggleIsSelected(bool isSelected) {
     return !isSelected;
   }
