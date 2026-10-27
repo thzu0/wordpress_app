@@ -9,6 +9,7 @@ import 'package:wordpress_app/model/woocommerce/login_model.dart';
 import 'package:wordpress_app/model/woocommerce/product_category_model.dart';
 import 'package:wordpress_app/model/woocommerce/product_model.dart';
 import 'package:wordpress_app/model/woocommerce/register_model.dart';
+import 'package:wordpress_app/model/wordpress/wordpress_post_model.dart';
 
 class APIService {
   ///=================================
@@ -100,6 +101,10 @@ class APIService {
     return productList;
   }
 
+  ///============================================================
+  ///============================================================
+  ///============================================================
+
   Future<List<ProductCategory>> getProductCategory() async {
     final String productCategoryURL =
         "${WoocommerceInfo.baseURl}${WoocommerceInfo.productCategoryURL}?consumer_key=${WoocommerceInfo.consumerKey}&consumer_secret=${WoocommerceInfo.consumerSecret}";
@@ -124,6 +129,10 @@ class APIService {
     return productCategoryList;
   }
 
+  ///============================================================
+  ///============================================================
+  ///============================================================
+
   Future<List<Product>> getProductCategorybyId(String catID) async {
     final String productCategoryURL =
         "${WoocommerceInfo.baseURl}${WoocommerceInfo.productURL}?category=$catID&consumer_key=${WoocommerceInfo.consumerKey}&consumer_secret=${WoocommerceInfo.consumerSecret}";
@@ -146,5 +155,31 @@ class APIService {
       throw 'Error $e';
     }
     return productCategoryList;
+  }
+
+  ///============================================================
+  ///============================================================
+  ///============================================================
+
+  Future<List<WordpressPosts>> getPosts() async {
+    final String postURL = WoocommerceInfo.baseURLPosts;
+    List<WordpressPosts> postList = <WordpressPosts>[];
+
+    try {
+      Response response = await Dio().get(
+        postURL,
+        options: Options(
+          headers: {HttpHeaders.contentTypeHeader: 'application/json'},
+        ),
+      );
+      if (response.statusCode == 200) {
+        postList = (response.data as List)
+            .map((i) => WordpressPosts.fromJson(i))
+            .toList();
+      }
+    } on DioException catch (e) {
+      throw 'Error $e';
+    }
+    return postList;
   }
 }

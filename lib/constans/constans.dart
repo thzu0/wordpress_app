@@ -8,6 +8,10 @@ class WoocommerceInfo {
   // BASE URL WOOCOMMERCE
   static String baseURl = 'http://10.0.2.2/project/wordpress/wp-json/wc/v3/';
 
+  // BASE URL WORDPRESS
+  static String baseURLPosts =
+      'http://10.0.2.2/project/wordpress/wp-json/wp/v2/posts?_embed';
+
   //URL FOR AUTHENTICATION WITH JWT
   static String tokenURL =
       'http://10.0.2.2/project/wordpress/wp-json/jwt-auth/v1/token';

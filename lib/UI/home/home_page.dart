@@ -28,9 +28,11 @@ class _HomePageState extends State<HomePage> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.read<ShopProvider>().loadHomeData(
+      final shop = context.read<ShopProvider>();
+      shop.loadHomeData(
         initialCategoryId: productsCategoryNames[selectedIndex].id.toString(),
       );
+      shop.getAllWordpressPosts();
     });
     productsCategoryNames.sort(
       (a, b) => a.orderId!.compareTo(b.orderId as num),
@@ -327,7 +329,7 @@ class _HomePageState extends State<HomePage> {
                 ),
 
                 ///===================================
-                ///  TEXT
+                /// Blog Post Title
                 ///===================================
                 Container(
                   alignment: Alignment.centerRight,
@@ -347,94 +349,95 @@ class _HomePageState extends State<HomePage> {
                 ),
 
                 ///===================================
-                ///  PRODUCT 2 (لیست عمودی)
+                /// Blog Posts
                 ///===================================
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 18.0),
-                  child: ListView.builder(
-                    shrinkWrap: true,
-                    physics: const NeverScrollableScrollPhysics(),
-                    itemCount: value.isProductLoading
-                        ? 0
-                        : value.productByCategory.length,
-                    itemBuilder: (context, index) {
-                      final product = value.productByCategory[index];
-                      final imageUrl = _imageOf(product);
-                      final categoryName = _categoryOf(product);
+                  child: value.isLoadingPost
+                      ? const Center(child: CircularProgressIndicator())
+                      : ListView.builder(
+                          shrinkWrap: true,
+                          physics: const NeverScrollableScrollPhysics(),
+                          itemCount: value.wordpressPosts.length,
+                          itemBuilder: (context, index) {
+                            final post = value.wordpressPosts[index];
+                            final title = post.title.toString();
 
-                      return GestureDetector(
-                        onTap: () {},
-                        child: Container(
-                          height: 90.0,
-                          margin: const EdgeInsets.symmetric(vertical: 8),
-                          padding: const EdgeInsets.symmetric(horizontal: 12),
-                          decoration: BoxDecoration(
-                            color: Constants.primaryColor.withValues(
-                              alpha: 0.1,
-                            ),
-                            borderRadius: BorderRadius.circular(12.0),
-                          ),
-                          child: Row(
-                            textDirection: TextDirection.rtl,
-                            children: [
-                              // عکس (سمت راست)
-                              ClipRRect(
-                                borderRadius: BorderRadius.circular(10),
-                                child: SizedBox(
-                                  width: 70,
-                                  height: 70,
-                                  child: _networkImage(
-                                    imageUrl,
-                                    fit: BoxFit.cover,
-                                  ),
+                            return GestureDetector(
+                              onTap: () {},
+                              child: Container(
+                                height: 90.0,
+                                margin: const EdgeInsets.symmetric(vertical: 8),
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 12,
                                 ),
-                              ),
-                              const SizedBox(width: 12),
-
-                              // اسم و دسته‌بندی
-                              Expanded(
-                                child: Column(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  crossAxisAlignment: CrossAxisAlignment.end,
+                                decoration: BoxDecoration(
+                                  color: Constants.primaryColor.withValues(
+                                    alpha: 0.1,
+                                  ),
+                                  borderRadius: BorderRadius.circular(12.0),
+                                ),
+                                child: Row(
+                                  textDirection: TextDirection.rtl,
                                   children: [
-                                    Text(
-                                      categoryName,
-                                      textAlign: TextAlign.right,
-                                      style: const TextStyle(
-                                        fontSize: 14,
-                                        fontFamily: 'Lalezar',
+                                    // عکس (سمت راست)
+                                    ClipRRect(
+                                      borderRadius: BorderRadius.circular(10),
+                                      child: SizedBox(
+                                        width: 70,
+                                        height: 70,
+                                        child: Icon(Icons.article, size: 40),
                                       ),
                                     ),
+                                    const SizedBox(width: 12),
+
+                                    // اسم و دسته‌بندی
+                                    Expanded(
+                                      child: Column(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.end,
+                                        children: [
+                                          Text(
+                                            title,
+                                            textAlign: TextAlign.right,
+                                            style: const TextStyle(
+                                              fontSize: 14,
+                                              fontFamily: 'Vazirmatn',
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                          ),
+                                          Text(
+                                            'پست وبلاگ',
+                                            textAlign: TextAlign.right,
+                                            maxLines: 1,
+                                            overflow: TextOverflow.ellipsis,
+                                            style: TextStyle(
+                                              fontSize: 17,
+                                              fontFamily: 'Vazirmatn',
+                                              color: Constants.blackColor,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+
+                                    // «کلیک کنید» (سمت چپ)
                                     Text(
-                                      product.name.toString(),
-                                      textAlign: TextAlign.right,
-                                      maxLines: 1,
-                                      overflow: TextOverflow.ellipsis,
+                                      'کلیک کنید',
                                       style: TextStyle(
-                                        fontSize: 17,
-                                        fontFamily: 'Vazirmatn',
-                                        color: Constants.blackColor,
+                                        fontFamily: 'Lalezar',
+                                        color: Constants.primaryColor,
+                                        fontSize: 18,
                                       ),
                                     ),
                                   ],
                                 ),
                               ),
-
-                              // «کلیک کنید» (سمت چپ)
-                              Text(
-                                'کلیک کنید',
-                                style: TextStyle(
-                                  fontFamily: 'Lalezar',
-                                  color: Constants.primaryColor,
-                                  fontSize: 18,
-                                ),
-                              ),
-                            ],
-                          ),
+                            );
+                          },
                         ),
-                      );
-                    },
-                  ),
                 ),
                 const SizedBox(height: 24),
               ],
