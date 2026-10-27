@@ -28,8 +28,13 @@ class _HomePageState extends State<HomePage> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.read<ShopProvider>().loadHomeData();
+      context.read<ShopProvider>().loadHomeData(
+        initialCategoryId: productsCategoryNames[selectedIndex].id.toString(),
+      );
     });
+    productsCategoryNames.sort(
+      (a, b) => a.orderId!.compareTo(b.orderId as num),
+    );
   }
 
   /// قیمت امن: اگه خالی یا نامعتبر بود کرش نمی‌کنه
@@ -70,13 +75,6 @@ class _HomePageState extends State<HomePage> {
 
     return Consumer<ShopProvider>(
       builder: (context, value, child) {
-        // لودینگ تمام‌صفحه فقط بار اول (دریافت دسته‌ها)
-        if (value.isCategoryLoading) {
-          return const Scaffold(
-            body: Center(child: CircularProgressIndicator()),
-          );
-        }
-
         return Scaffold(
           body: SingleChildScrollView(
             child: Column(
@@ -145,21 +143,19 @@ class _HomePageState extends State<HomePage> {
                   child: ListView.builder(
                     reverse: true,
                     scrollDirection: Axis.horizontal,
-                    itemCount: value.productCategory.length,
+                    itemCount: productsCategoryNames.length,
                     itemBuilder: (context, index) {
-                      final category = value.productCategory[index];
+                      final category = productsCategoryNames[index];
                       return Padding(
                         padding: const EdgeInsets.all(10.0),
                         child: GestureDetector(
                           onTap: () {
                             if (selectedIndex == index) return;
                             setState(() => selectedIndex = index);
-                            value.getProductsByCategory(
-                              category.categoryId.toString(),
-                            );
+                            value.getProductsByCategory(category.id.toString());
                           },
                           child: Text(
-                            category.categoryName.toString(),
+                            category.name.toString(),
                             style: TextStyle(
                               fontFamily: 'Vazirmatn',
                               fontSize: 16,

@@ -63,8 +63,8 @@ class ShopProvider with ChangeNotifier {
   }
 
   /// لود اولیه: اول دسته‌ها، بعد محصولات اولین دسته (بدون hardcode کردن '17')
-  Future<void> loadHomeData() async {
-    await getAllCategoryNames();
+  Future<void> loadHomeData({required String initialCategoryId}) async {
+    await getProductsByCategory(initialCategoryId);
     if (_productCategory.isNotEmpty) {
       await getProductsByCategory(_productCategory.first.categoryId.toString());
     }
