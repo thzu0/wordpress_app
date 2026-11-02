@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart' show NumberFormat;
 import 'package:provider/provider.dart';
+import 'package:wordpress_app/UI/utils/custom_add_quantity.dart';
 import 'package:wordpress_app/UI/utils/custom_appbar.dart';
 import 'package:wordpress_app/UI/utils/extension.dart';
 import 'package:wordpress_app/constans/constans.dart';
@@ -345,6 +346,14 @@ class _ProductDetailState extends State<ProductDetail> {
                       ),
                     ],
                   ),
+                ),
+
+                CustomQuantity(
+                  minNumber: 0,
+                  maxNumber: 20,
+                  iconSize: 20,
+                  value: 0,
+                  onChanged: (value) {},
                 ),
 
                 SizedBox(width: 20.0),
