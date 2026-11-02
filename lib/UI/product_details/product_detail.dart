@@ -47,85 +47,97 @@ class _ProductDetailState extends State<ProductDetail> {
   ///===================================
   Widget _buildDescription() {
     final text = widget.product!.shortDescription.toString().removeAllHtmlTags;
+
     final bgColor = Color.alphaBlend(
       Constants.primaryColor.withValues(alpha: 0.5),
       Theme.of(context).scaffoldBackgroundColor,
     );
 
-    final textWidget = Text(
-      text,
-      textDirection: TextDirection.rtl,
-      textAlign: TextAlign.justify,
-      style: TextStyle(
-        fontFamily: 'Vazirmatn',
-        color: Constants.blackColor.withValues(alpha: 0.7),
-        height: 1.7,
-        fontSize: 18,
-      ),
-    );
-
     return Column(
       crossAxisAlignment: CrossAxisAlignment.end,
       children: [
-        // ناحیه‌ی متن
+        // DESCRIPTION
         Expanded(
-          child: _isExpanded
-              ? SingleChildScrollView(
-                  physics: const BouncingScrollPhysics(),
-                  child: textWidget,
-                )
-              : Stack(
-                  children: [
-                    ClipRect(
-                      child: SingleChildScrollView(
-                        physics: const NeverScrollableScrollPhysics(),
-                        child: textWidget,
-                      ),
+          child: SingleChildScrollView(
+            physics: _isExpanded
+                ? const BouncingScrollPhysics()
+                : const NeverScrollableScrollPhysics(),
+            child: Stack(
+              children: [
+                AnimatedSize(
+                  duration: const Duration(milliseconds: 300),
+                  curve: Curves.easeInOut,
+                  alignment: Alignment.topCenter,
+                  child: Text(
+                    text,
+                    textDirection: TextDirection.rtl,
+                    textAlign: TextAlign.justify,
+                    maxLines: _isExpanded ? null : 6,
+                    overflow: _isExpanded
+                        ? TextOverflow.visible
+                        : TextOverflow.ellipsis,
+                    style: TextStyle(
+                      fontFamily: 'Vazirmatn',
+                      color: Constants.blackColor.withValues(alpha: 0.7),
+                      height: 1.8,
+                      fontSize: 16,
                     ),
-                    // فید ته متن
-                    Positioned(
-                      left: 0,
-                      right: 0,
-                      bottom: 0,
-                      height: 60,
-                      child: IgnorePointer(
-                        child: DecoratedBox(
-                          decoration: BoxDecoration(
-                            gradient: LinearGradient(
-                              begin: Alignment.topCenter,
-                              end: Alignment.bottomCenter,
-                              colors: [bgColor.withValues(alpha: 0.7), bgColor],
-                            ),
+                  ),
+                ),
+
+                // FADE EFFECT
+                if (!_isExpanded)
+                  Positioned(
+                    left: 0,
+                    right: 0,
+                    bottom: 0,
+                    height: 35,
+                    child: IgnorePointer(
+                      child: DecoratedBox(
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            begin: Alignment.topCenter,
+                            end: Alignment.bottomCenter,
+                            colors: [bgColor.withValues(alpha: 0), bgColor],
                           ),
                         ),
                       ),
                     ),
-                  ],
-                ),
+                  ),
+              ],
+            ),
+          ),
         ),
 
-        // دکمه‌ی ادامه / بستن
-        TextButton(
-          onPressed: () => setState(() => _isExpanded = !_isExpanded),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Icon(
-                _isExpanded
-                    ? Icons.keyboard_arrow_up
-                    : Icons.keyboard_arrow_down,
+        const SizedBox(height: 4),
+
+        // READ MORE BUTTON
+        Align(
+          alignment: Alignment.centerRight,
+          child: TextButton.icon(
+            onPressed: () {
+              setState(() {
+                _isExpanded = !_isExpanded;
+              });
+            },
+            icon: AnimatedRotation(
+              turns: _isExpanded ? 0.5 : 0,
+              duration: const Duration(milliseconds: 250),
+              child: Icon(
+                Icons.keyboard_arrow_down_rounded,
+                color: Constants.primaryColor,
+                size: 24,
+              ),
+            ),
+            label: Text(
+              _isExpanded ? 'بستن توضیحات' : 'ادامه مطلب',
+              style: TextStyle(
+                fontFamily: 'Vazirmatn',
+                fontSize: 14,
+                fontWeight: FontWeight.bold,
                 color: Constants.primaryColor,
               ),
-              Text(
-                _isExpanded ? 'بستن' : 'ادامه',
-                style: TextStyle(
-                  fontFamily: 'Vazirmatn',
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                  color: Constants.primaryColor,
-                ),
-              ),
-            ],
+            ),
           ),
         ),
       ],
@@ -213,9 +225,10 @@ class _ProductDetailState extends State<ProductDetail> {
                 right: 0,
                 child: Container(
                   padding: const EdgeInsets.only(
-                    top: 35.0,
-                    left: 30.0,
-                    right: 30.0,
+                    top: 30.0,
+                    left: 25.0,
+                    right: 25.0,
+                    bottom: 170.0,
                   ),
                   height: size.height * 0.55,
                   width: size.width,
@@ -300,6 +313,72 @@ class _ProductDetailState extends State<ProductDetail> {
                 ),
               ),
             ],
+          ),
+          floatingActionButton: SizedBox(
+            width: size.width * 0.9,
+            height: 50.0,
+            child: Row(
+              children: [
+                InkWell(
+                  onTap: () {},
+                  borderRadius: BorderRadius.circular(50.0),
+                  child: Stack(
+                    clipBehavior: Clip.none,
+                    children: [
+                      Container(
+                        height: 50,
+                        width: 50,
+                        decoration: BoxDecoration(
+                          color: Constants.primaryColor.withValues(alpha: 0.5),
+                          borderRadius: BorderRadius.circular(50.0),
+                          boxShadow: [
+                            BoxShadow(
+                              offset: Offset(0.0, 1.0),
+                              blurRadius: 5.0,
+                              color: Constants.primaryColor.withValues(
+                                alpha: 0.3,
+                              ),
+                            ),
+                          ],
+                        ),
+                        child: Icon(Icons.shopping_cart, color: Colors.white),
+                      ),
+                    ],
+                  ),
+                ),
+
+                SizedBox(width: 20.0),
+
+                Expanded(
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: Constants.primaryColor,
+                      borderRadius: BorderRadius.circular(10.0),
+                      boxShadow: [
+                        BoxShadow(
+                          offset: Offset(0.0, 1.0),
+                          blurRadius: 5.0,
+                          color: Constants.primaryColor.withValues(alpha: 0.3),
+                        ),
+                      ],
+                    ),
+                    child: Center(
+                      child: InkResponse(
+                        onTap: () {},
+                        child: Text(
+                          'افزودن به سبد خرید',
+                          style: TextStyle(
+                            fontFamily: 'Vazirmatn',
+                            color: Colors.white,
+                            fontSize: 22,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
           ),
         );
       },
