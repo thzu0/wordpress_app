@@ -5,6 +5,8 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 
 import 'package:wordpress_app/constans/constans.dart';
+import 'package:wordpress_app/model/woocommerce/addtocart_request_model.dart';
+import 'package:wordpress_app/model/woocommerce/addtocart_response_model.dart';
 import 'package:wordpress_app/model/woocommerce/login_model.dart';
 import 'package:wordpress_app/model/woocommerce/product_category_model.dart';
 import 'package:wordpress_app/model/woocommerce/product_model.dart';
@@ -181,5 +183,34 @@ class APIService {
       throw 'Error $e';
     }
     return postList;
+  }
+
+  ///============================================================
+  /// ADD TO CART PRODUCTS WITH OWN API THAT WE MAKE IT WITH PHP
+  ///============================================================
+
+  Future<AddtoCartResModel> addtoCart(AddtoCartReqModel model) async {
+    model.userId = 1;
+    String url = WoocommerceInfo.baseURl + WoocommerceInfo.addtocartURL;
+
+    late AddtoCartResModel responseModel;
+
+    try {
+      Response response = await Dio().post(
+        url,
+        data: model.toJson(),
+        options: Options(
+          headers: {HttpHeaders.contentTypeHeader: 'application/json'},
+        ),
+      );
+      if (response.statusCode == 200) {
+        responseModel = AddtoCartResModel.fromJson(response.data);
+      }
+    } on DioException catch (e) {
+      if (e.response!.statusCode == 404) {
+        throw 'Error $e';
+      }
+    }
+    return responseModel;
   }
 }
