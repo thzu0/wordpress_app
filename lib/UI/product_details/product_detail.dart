@@ -5,9 +5,11 @@ import 'package:wordpress_app/UI/utils/custom_add_quantity.dart';
 import 'package:wordpress_app/UI/utils/custom_appbar.dart';
 import 'package:wordpress_app/UI/utils/extension.dart';
 import 'package:wordpress_app/constans/constans.dart';
+import 'package:wordpress_app/model/woocommerce/addtocart_request_model.dart';
 
 import 'package:wordpress_app/model/woocommerce/product_model.dart';
 import 'package:wordpress_app/provider/loader_provider.dart';
+import 'package:wordpress_app/provider/shop_provider.dart';
 
 class ProductDetail extends StatefulWidget {
   final Product? product;
@@ -20,6 +22,9 @@ class ProductDetail extends StatefulWidget {
 
 class _ProductDetailState extends State<ProductDetail> {
   NumberFormat numberFormat = NumberFormat.decimalPattern('fa');
+
+  int quantity = 0;
+  CartProducts cartProducts = CartProducts();
 
   bool _isExpanded = false;
 
@@ -352,8 +357,10 @@ class _ProductDetailState extends State<ProductDetail> {
                   minNumber: 0,
                   maxNumber: 20,
                   iconSize: 20,
-                  value: 0,
-                  onChanged: (value) {},
+                  value: quantity,
+                  onChanged: (value) {
+                    cartProducts.quantity = value;
+                  },
                 ),
 
                 SizedBox(width: 20.0),
@@ -373,7 +380,23 @@ class _ProductDetailState extends State<ProductDetail> {
                     ),
                     child: Center(
                       child: InkResponse(
-                        onTap: () {},
+                        onTap: () {
+                          Provider.of<LoaderProvider>(
+                            context,
+                            listen: false,
+                          ).setLoadingStatus(true);
+                          ShopProvider cartProvider = Provider.of<ShopProvider>(
+                            context,
+                            listen: false,
+                          );
+                          cartProducts.productId = widget.product!.id;
+                          cartProvider.addToCart(cartProducts, (val) {
+                            Provider.of<LoaderProvider>(
+                              context,
+                              listen: false,
+                            ).setLoadingStatus(false);
+                          });
+                        },
                         child: Text(
                           'افزودن به سبد خرید',
                           style: TextStyle(
